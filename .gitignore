@@ -1,0 +1,33 @@
+# created by virtualenv automatically
+
+# General things to ignore.
+*.py[cod]
+__pycache__/
+*.so
+*~
+
+# Virtual environment and local bash for environment variables
+.venv/
+.env*
+!.env.dist
+
+# Skip sqlite dbs
+db.sqlite3
+
+# Due to using pytest.
+.cache
+
+# Editors.
+*.sw[op]
+.idea
+.vscode
+
+# Tests.
+.coverage
+.hypothesis/
+htmlcov/
+pgdata/
+
+# Manual Deploy
+helm/
+k8s/
