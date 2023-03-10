@@ -1,6 +1,6 @@
 import requests
 
-endpoint = "http://127.0.0.1:8080/api/products/"
+endpoint = "http://localhost:8080/api/products/"
 
 data={
     "title": "this field id done"
