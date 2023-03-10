@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 # from django.http import Http404
@@ -33,6 +33,65 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 
 product_detail_view = ProductDetailAPIView.as_view()
 
+class ProductUpdateAPIView(generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'
+
+    def perform_update(self, serializer):
+        # serializer.save(user=self.request.user)
+        instance = serializer.save()
+        
+        if not instance.content is None:
+            instance.content = instance.title
+            # not save initialy
+            ##
+
+product_update_view = ProductUpdateAPIView.as_view()
+
+class ProductMixinView(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    generics.GenericAPIView
+    ):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'
+
+    def get(self, request, *args, **kwargs): # HTTP -> get
+        print(args, kwargs)
+        pk = kwargs.get("pk")
+        if pk is not None:
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs): # HTTP -> post
+        
+        return self.create(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        # serializer.save(user=self.request.user)
+        title = serializer.validated_data.get('title')
+        content = serializer.validated_data.get('content')
+        
+        if content is None:
+            content = "this is the single view doing stuff"
+        
+        serializer.save(content=content)
+
+product_mixin_view = ProductMixinView.as_view()
+
+class ProductDeleteAPIView(generics.DestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'
+
+    def perform_destroy(self, instance):
+        # instance
+        super().perform_destroy(instance)
+
+product_destroy_view = ProductDeleteAPIView.as_view()
 
 # class ProductListAPIView(generics.ListAPIView):
 #     """
